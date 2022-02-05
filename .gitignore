@@ -1,1 +1,3 @@
 /tests/*
+/_em/*
+/node_modules/*
