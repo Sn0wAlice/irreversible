@@ -1,7 +1,15 @@
-[
-    {
-        "name": "Cassys / DNS server",
-        "type": "address",
-        "github": "https://github.com/Sn0wAlice/Cassys"
+{
+    "deploy": [
+        {
+            "name": "Cassys / DNS server",
+            "type": "address",
+            "github": "https://github.com/Sn0wAlice/Cassys"
+        }
+    ],
+    "exfiltration": {
+        "hostname": "http://127.0.0.1",
+        "port": 16333,
+        "hostnameSocket": "127.0.0.1",
+        "portSocket": 16334
     }
-]
+}
