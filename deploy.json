@@ -9,6 +9,7 @@
     "exfiltration": {
         "hostname": "http://127.0.0.1",
         "port": 16333,
+        "uploadport": 16332,
         "hostnameSocket": "127.0.0.1",
         "portSocket": 16334
     }

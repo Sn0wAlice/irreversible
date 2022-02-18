@@ -22,8 +22,11 @@ Rescue all your server services as fast as possible for **EXTREME situations**
 ## Cloud mode --cloud
 - Create a cloud instance in the server
 - Start talking with the exfiltration server for files hosting
+- Create a cloud instance in `./cloud/` dir
+- Web vue with the exfiltration server
 
 ... more soon
 
 # Based on: 
 - DNS | [Cassys](https://github.com/Sn0wAlice/Cassys)
+- My skills | [Like My github](https://github.com/Sn0wAlice) made with ❤️

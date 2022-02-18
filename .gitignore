@@ -1,3 +1,5 @@
 /tests/*
 /_em/*
 /node_modules/*
+/cloud/*
+!/cloud/1234_1324
